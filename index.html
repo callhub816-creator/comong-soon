@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CallHub.in - AI Calls that Convert</title>
 
-    <!-- Inter font -->
+    <!-- Inter font (optional, kept for look) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Tailwind Play CDN for quick usage without build -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Lucide icons (CDN) -->
+    <!-- Lucide icons (CDN) - kept for other icons if needed -->
     <script src="https://unpkg.com/lucide@0.287.0/dist/lucide.min.js"></script>
 
     <style>
@@ -110,10 +110,34 @@
       /* small helpers */
       .section-padding{ padding: 4.5rem 0; }
       @media (max-width:768px){ .section-padding{ padding: 3rem 0; } }
+
+      /* ICON sizing/fallback styling */
+      .feature-icon {
+        width:64px;
+        height:64px;
+        border-radius:12px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+      }
+      .feature-icon img.logo {
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+      }
+      .feature-icon .fallback-svg {
+        width:54px;
+        height:54px;
+      }
     </style>
   </head>
 
   <body>
+    <!-- NOTE: Save the provided logo image (from your last message) as "logo.png" into the same folder as this index.html.
+         The feature cards will use logo.png as the icon. If logo.png is missing the fallback SVG will be shown. -->
+
     <!-- Toast -->
     <div id="toast" class="glass-effect rounded-md p-4 shadow-lg">
       <div class="flex items-start space-x-3">
@@ -237,33 +261,57 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Human-like AI Voice (uses provided logo.png as icon with fallback) -->
             <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
-                <i data-lucide="phone" class="lucide-icon"></i>
+              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
+                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <!-- Fallback SVG icon (shown only if logo.png fails to load) -->
+                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <rect x="9" y="3" width="6" height="10" rx="3" fill="white" opacity="0.95"></rect>
+                  <path d="M12 17v3" stroke="white"></path>
+                  <rect x="8" y="16" width="8" height="2" rx="1" fill="rgba(255,255,255,0.08)"></rect>
+                </svg>
               </div>
               <h3 class="text-xl font-semibold text-white">Human-like AI Voice</h3>
               <p class="text-gray-400">Advanced AI that sounds natural and builds genuine connections with your prospects.</p>
             </div>
 
+            <!-- Instant Deployment -->
             <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
-                <i data-lucide="zap" class="lucide-icon"></i>
+              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
+                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <path d="M13 2 L3 14h7l-1 8L21 10h-8z" fill="white" opacity="0.98"></path>
+                </svg>
               </div>
               <h3 class="text-xl font-semibold text-white">Instant Deployment</h3>
               <p class="text-gray-400">Upload your Excel file and start calling within minutes. No setup required.</p>
             </div>
 
+            <!-- Multi-language Support -->
             <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
-                <i data-lucide="globe" class="lucide-icon"></i>
+              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
+                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <circle cx="12" cy="12" r="6" stroke="white" fill="rgba(255,255,255,0.06)"></circle>
+                  <path d="M2 12h20" stroke="white" stroke-width="1"></path>
+                  <path d="M12 2v20" stroke="white" stroke-width="1"></path>
+                </svg>
               </div>
               <h3 class="text-xl font-semibold text-white">Multi-language Support</h3>
               <p class="text-gray-400">Reach customers in Hindi, English, and regional languages with perfect pronunciation.</p>
             </div>
 
+            <!-- Real-time Analytics -->
             <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
-                <i data-lucide="trending-up" class="lucide-icon"></i>
+              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
+                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <path d="M3 17l6-6 4 4 8-8" stroke="white"></path>
+                  <circle cx="3" cy="17" r="1.4" fill="white"></circle>
+                  <circle cx="9" cy="11" r="1.4" fill="white"></circle>
+                  <circle cx="13" cy="15" r="1.4" fill="white"></circle>
+                </svg>
               </div>
               <h3 class="text-xl font-semibold text-white">Real-time Analytics</h3>
               <p class="text-gray-400">Track call performance, conversion rates, and optimize your campaigns instantly.</p>
@@ -475,4 +523,4 @@
       });
     </script>
   </body>
-</html>
+</html>s
