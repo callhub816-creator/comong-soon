@@ -1,538 +1,88 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CallHub.in - AI Calls that Convert</title>
+<section class="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4" id="lists">
 
-    <!-- Inter font (optional, kept for look) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Tailwind Play CDN for quick usage without build -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Lucide icons (CDN) - kept for other icons if needed -->
-    <script src="https://unpkg.com/lucide@0.287.0/dist/lucide.min.js"></script>
-
-    <style>
-      :root{
-        --background: #0f0f23;
-        --foreground: rgba(255,255,255,0.98);
-      }
-
-      html,body { height:100%; }
-      body {
-        font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-        margin:0;
-        color: var(--foreground);
-        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
-        -webkit-font-smoothing:antialiased;
-        -moz-osx-font-smoothing:grayscale;
-      }
-
-      /* Reused helper classes from your project */
-      .gradient-text{
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .glass-effect{
-        background: rgba(255,255,255,0.03);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.06);
-      }
-
-      .feature-card{
-        background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-        border: 1px solid rgba(255,255,255,0.04);
-        transition: all .25s ease;
-      }
-      .feature-card:hover{
-        transform: translateY(-6px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-      }
-
-      .btn-primary{
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: .6rem 1rem;
-        border-radius: .5rem;
-        display:inline-flex;
-        align-items:center;
-        gap:.5rem;
-        transition: all .2s ease;
-      }
-      .btn-primary:hover{
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102,126,234,0.25);
-      }
-
-      .text-shadow{
-        text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-      }
-
-      .animate-float{
-        animation: float 6s ease-in-out infinite;
-      }
-      @keyframes float{
-        0%,100%{ transform: translateY(0); }
-        50%{ transform: translateY(-18px); }
-      }
-
-      .animate-pulse-slow{
-        animation: pulse-slow 4s ease-in-out infinite;
-      }
-      @keyframes pulse-slow{
-        0%,100%{ opacity: 1; }
-        50%{ opacity: 0.6; }
-      }
-
-      /* Navbar specific */
-      nav .nav-link{
-        color: rgba(255,255,255,0.85);
-      }
-      nav .nav-link.active{ color: #7aa2ff; }
-
-      /* Simple toast */
-      #toast {
-        position: fixed;
-        right: 1rem;
-        top: 1rem;
-        z-index: 60;
-        max-width: 340px;
-        display: none;
-      }
-      #toast.show { display: block; animation: toast-in .3s ease; }
-      @keyframes toast-in { from { transform: translateY(-8px); opacity:0 } to { transform: translateY(0); opacity:1 } }
-
-      /* small helpers */
-      .section-padding{ padding: 4.5rem 0; }
-      @media (max-width:768px){ .section-padding{ padding: 3rem 0; } }
-
-      /* ICON sizing/fallback styling */
-      .feature-icon {
-        width:64px;
-        height:64px;
-        border-radius:12px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        overflow:hidden;
-      }
-      .feature-icon img.logo {
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        display:block;
-      }
-      .feature-icon .fallback-svg {
-        width:54px;
-        height:54px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- NOTE: Save the provided logo image (from your last message) as "logo.png" into the same folder as this index.html.
-         The feature cards will use logo.png as the icon. If logo.png is missing the fallback SVG will be shown. -->
-
-    <!-- Toast -->
-    <div id="toast" class="glass-effect rounded-md p-4 shadow-lg">
-      <div class="flex items-start space-x-3">
-        <div class="flex-shrink-0">
-          <svg class="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v6"></path><path d="M12 22v-6"></path></svg>
-        </div>
-        <div class="flex-1">
-          <div id="toast-title" class="font-semibold">Title</div>
-          <div id="toast-desc" class="text-sm text-gray-200">Description goes here</div>
-        </div>
-        <button id="toast-close" class="text-gray-300 hover:text-white">&times;</button>
-      </div>
-    </div>
-
-    <!-- NAVBAR -->
-    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <a href="#" class="flex items-center space-x-3">
-            <div class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10l1-2 4 1 8-5 4 7"></path></svg>
-            </div>
-            <span class="text-xl font-bold gradient-text">CallHub.in</span>
-          </a>
-
-          <!-- desktop links -->
-          <div class="hidden md:flex items-center space-x-8">
-            <a class="nav-link text-sm font-medium" href="#features">Features</a>
-            <a class="nav-link text-sm font-medium" href="#industries">Industries</a>
-            <a class="nav-link text-sm font-medium" href="#pricing">Pricing</a>
-            <a class="nav-link text-sm font-medium" href="#case-studies">Case Studies</a>
-            <a class="nav-link text-sm font-medium" href="#blog">Blog</a>
-            <a class="nav-link text-sm font-medium" href="#about">About</a>
-          </div>
-
-          <div class="hidden md:flex items-center space-x-4">
-            <button id="tryDemoTop" class="btn-primary text-sm"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"></path></svg> Try Demo</button>
-          </div>
-
-          <!-- mobile toggle -->
-          <div class="md:hidden">
-            <button id="mobileMenuBtn" class="text-gray-300 focus:outline-none" aria-label="Open menu">
-              <svg id="menuIcon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 6h16M4 12h16M4 18h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- mobile nav -->
-        <div id="mobileMenu" class="hidden mt-2 md:hidden">
-          <div class="glass-effect rounded-lg p-4 space-y-3">
-            <a class="block text-gray-300" href="#features">Features</a>
-            <a class="block text-gray-300" href="#industries">Industries</a>
-            <a class="block text-gray-300" href="#pricing">Pricing</a>
-            <a class="block text-gray-300" href="#case-studies">Case Studies</a>
-            <a class="block text-gray-300" href="#blog">Blog</a>
-            <a class="block text-gray-300" href="#about">About</a>
-            <button id="tryDemoMobile" class="btn-primary w-full mt-2">Try Demo</button>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <main class="pt-20">
-      <!-- HERO -->
-      <section class="section-padding relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="space-y-8">
-              <div class="inline-flex items-center px-4 py-2 rounded-full glass-effect text-sm">
-                <svg class="w-4 h-4 mr-2 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"></path></svg>
-                <span>AI Calls that Convert</span>
-              </div>
-
-              <h1 class="text-5xl lg:text-7xl font-bold text-white text-shadow leading-tight">
-                Transform Leads into
-                <span class="gradient-text block">Customers</span>
-              </h1>
-
-              <p class="text-xl text-gray-300 max-w-2xl">
-                Upload your Excel file and watch our AI make thousands of human-like calls. Perfect for sales, loan recovery, political outreach, and fundraising.
-              </p>
-
-              <div class="flex flex-col sm:flex-row gap-4">
-                <button id="heroDemoBtn" class="btn-primary text-lg px-6 py-3"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"></path></svg> Try Free Demo Call</button>
-                <button id="watchDemoBtn" class="border border-white/20 hover:bg-white/10 text-lg px-6 py-3 rounded-md">Watch Demo Video</button>
-              </div>
-
-              <div class="flex items-center space-x-8 text-sm text-gray-400">
-                <div class="flex items-center space-x-2">
-                  <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span>20 Free Demo Calls</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span>No Credit Card Required</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="relative">
-              <div class="relative z-10">
-                <img class="w-full h-auto rounded-2xl shadow-2xl animate-float" alt="AI calling dashboard" src="https://images.unsplash.com/photo-1625296276703-3fbc924f07b5?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=example">
-              </div>
-
-              <div class="absolute -top-6 -right-6 w-72 h-72 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full blur-3xl animate-pulse-slow"></div>
-              <div class="absolute -bottom-6 -left-6 w-72 h-72 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur-3xl animate-pulse-slow"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- FEATURES -->
-      <section id="features" class="section-padding">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-4xl lg:text-5xl font-bold text-white">Why Choose <span class="gradient-text">CallHub.in</span>?</h2>
-            <p class="text-xl text-gray-300 max-w-3xl mx-auto">Advanced AI technology meets human psychology to create calls that actually convert.</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Human-like AI Voice (uses provided logo.png as icon with fallback) -->
-            <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
-                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-                <!-- Fallback SVG icon (shown only if logo.png fails to load) -->
-                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                  <rect x="9" y="3" width="6" height="10" rx="3" fill="white" opacity="0.95"></rect>
-                  <path d="M12 17v3" stroke="white"></path>
-                  <rect x="8" y="16" width="8" height="2" rx="1" fill="rgba(255,255,255,0.08)"></rect>
-                </svg>
-              </div>
-              <h3 class="text-xl font-semibold text-white">Human-like AI Voice</h3>
-              <p class="text-gray-400">Advanced AI that sounds natural and builds genuine connections with your prospects.</p>
-            </div>
-
-            <!-- Instant Deployment -->
-            <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
-                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                  <path d="M13 2 L3 14h7l-1 8L21 10h-8z" fill="white" opacity="0.98"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-semibold text-white">Instant Deployment</h3>
-              <p class="text-gray-400">Upload your Excel file and start calling within minutes. No setup required.</p>
-            </div>
-
-            <!-- Multi-language Support -->
-            <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
-                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                  <circle cx="12" cy="12" r="6" stroke="white" fill="rgba(255,255,255,0.06)"></circle>
-                  <path d="M2 12h20" stroke="white" stroke-width="1"></path>
-                  <path d="M12 2v20" stroke="white" stroke-width="1"></path>
-                </svg>
-              </div>
-              <h3 class="text-xl font-semibold text-white">Multi-language Support</h3>
-              <p class="text-gray-400">Reach customers in Hindi, English, and regional languages with perfect pronunciation.</p>
-            </div>
-
-            <!-- Real-time Analytics -->
-            <div class="feature-card rounded-2xl p-6 text-center space-y-4">
-              <div class="feature-icon" style="background: linear-gradient(135deg,#6D4AFF,#22D3EE);">
-                <img class="logo" src="logo.png" alt="CallHub logo" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-                <svg class="fallback-svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                  <path d="M3 17l6-6 4 4 8-8" stroke="white"></path>
-                  <circle cx="3" cy="17" r="1.4" fill="white"></circle>
-                  <circle cx="9" cy="11" r="1.4" fill="white"></circle>
-                  <circle cx="13" cy="15" r="1.4" fill="white"></circle>
-                </svg>
-              </div>
-              <h3 class="text-xl font-semibold text-white">Real-time Analytics</h3>
-              <p class="text-gray-400">Track call performance, conversion rates, and optimize your campaigns instantly.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TESTIMONIALS -->
-      <section class="section-padding">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-4xl lg:text-5xl font-bold text-white">Success <span class="gradient-text">Stories</span></h2>
-            <p class="text-xl text-gray-300 max-w-3xl mx-auto">See how businesses across India are transforming their calling campaigns.</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="glass-effect rounded-2xl p-6 space-y-4">
-              <div class="flex space-x-1">
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              </div>
-              <p class="text-gray-300 italic">"CallHub.in increased our loan recovery rate by 340%. The AI sounds so natural, customers actually engage!"</p>
-              <div>
-                <p class="text-white font-semibold">Rajesh Kumar</p>
-                <p class="text-gray-400 text-sm">FinanceFirst</p>
-              </div>
-            </div>
-
-            <div class="glass-effect rounded-2xl p-6 space-y-4">
-              <div class="flex space-x-1">
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              </div>
-              <p class="text-gray-300 italic">"We reached 50,000 voters in 3 days. The multilingual support was game-changing for our rural outreach."</p>
-              <div>
-                <p class="text-white font-semibold">Priya Sharma</p>
-                <p class="text-gray-400 text-sm">VoteWin Campaign</p>
-              </div>
-            </div>
-
-            <div class="glass-effect rounded-2xl p-6 space-y-4">
-              <div class="flex space-x-1">
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              </div>
-              <p class="text-gray-300 italic">"From 2% to 15% conversion rate. CallHub.in transformed our entire sales process."</p>
-              <div>
-                <p class="text-white font-semibold">Amit Patel</p>
-                <p class="text-gray-400 text-sm">SalesBoost Agency</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA -->
-      <section class="section-padding">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div class="glass-effect rounded-3xl p-12 space-y-8">
-            <h2 class="text-4xl lg:text-5xl font-bold text-white">Ready to <span class="gradient-text">Transform</span> Your Calls?</h2>
-            <p class="text-xl text-gray-300">Join thousands of businesses already using CallHub.in to boost their conversion rates.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <button id="ctaDemo" class="btn-primary text-lg px-8 py-4"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"></path></svg> Start Free Demo</button>
-              <button id="ctaPricing" class="border border-white/20 hover:bg-white/10 text-lg px-8 py-4 rounded-md">View Pricing</button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="glass-effect border-t border-white/10 mt-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div class="space-y-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10l1-2 4 1 8-5 4 7"></path></svg>
-              </div>
-              <span class="text-xl font-bold gradient-text">CallHub.in</span>
-            </div>
-            <p class="text-gray-400 text-sm">AI-powered calling platform that converts leads into customers with human-like conversations.</p>
-            <div class="flex space-x-4">
-              <i data-lucide="twitter" class="text-gray-400"></i>
-              <i data-lucide="linkedin" class="text-gray-400"></i>
-              <i data-lucide="github" class="text-gray-400"></i>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <span class="text-lg font-semibold text-white">Quick Links</span>
-            <div class="flex flex-col space-y-2">
-              <a href="#features" class="text-gray-400 hover:text-white text-sm">Features</a>
-              <a href="#pricing" class="text-gray-400 hover:text-white text-sm">Pricing</a>
-              <a href="#demo" class="text-gray-400 hover:text-white text-sm">Demo</a>
-              <a href="#case-studies" class="text-gray-400 hover:text-white text-sm">Case Studies</a>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <span class="text-lg font-semibold text-white">Industries</span>
-            <div class="flex flex-col space-y-2">
-              <a href="#industries" class="text-gray-400 hover:text-white text-sm">Sales Agencies</a>
-              <a href="#industries" class="text-gray-400 hover:text-white text-sm">Finance & Banking</a>
-              <a href="#industries" class="text-gray-400 hover:text-white text-sm">Political Campaigns</a>
-              <a href="#industries" class="text-gray-400 hover:text-white text-sm">NGOs & Fundraising</a>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <span class="text-lg font-semibold text-white">Contact</span>
-            <div class="flex flex-col space-y-3">
-              <div class="flex items-center space-x-2">
-                <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
-                <span class="text-gray-400 text-sm">hello@callhub.in</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
-                <span class="text-gray-400 text-sm">+91 98765 43210</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i>
-                <span class="text-gray-400 text-sm">Mumbai, India</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        
-        <div class="border-t border-white/10 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-  <div class="text-center md:text-left">
-    <p class="text-gray-400 text-sm">© 2025 CallHub.in. All rights reserved.</p>
-    <p class="text-lg font-semibold text-white mt-2">
-      <p class="text-xl font-semibold mt-3">
-  🚀 <span class="relative">
-    We are building something amazing — stay tuned.
-    <span class="absolute left-0 bottom-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-600 opacity-40 rounded"></span>
-  </span>
-</p>
-
-
-    </p>
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">Root</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2">
+        <code>package.json</code>
+        <button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="package.json">Copy</button>
+      </li>
+      <li class="flex items-center justify-between gap-2">
+        <code>index.html</code>
+        <button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="index.html">Copy</button>
+      </li>
+      <li class="flex items-center justify-between gap-2">
+        <code>tailwind.config.js</code>
+        <button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="tailwind.config.js">Copy</button>
+      </li>
+    </ul>
   </div>
-  <div class="flex space-x-6 mt-4 md:mt-0">
-    <a href="#legal" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
-    <a href="#legal" class="text-gray-400 hover:text-white text-sm">Terms of Service</a>
-    <a href="#legal" class="text-gray-400 hover:text-white text-sm">Compliance</a>
+
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">src root</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/index.css</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/index.css">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/main.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/main.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/App.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/App.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/i18n.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/i18n.js">Copy</button></li>
+    </ul>
   </div>
-</div>
-    </footer>
 
-    <script>
-      // initialize lucide icons
-      document.addEventListener('DOMContentLoaded', function () {
-        if (window.lucide) {
-          lucide.createIcons();
-        }
-      });
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">lib, config, data</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/lib/utils.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/lib/utils.js">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/config/payments.json</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/config/payments.json">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/config/languages.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/config/languages.js">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/data/agents.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/data/agents.js">Copy</button></li>
+    </ul>
+  </div>
 
-      // Mobile menu
-      const mobileBtn = document.getElementById('mobileMenuBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
-      let mobileOpen = false;
-      mobileBtn && mobileBtn.addEventListener('click', () => {
-        mobileOpen = !mobileOpen;
-        mobileMenu.style.display = mobileOpen ? 'block' : 'none';
-      });
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">i18n locales</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/locales/en/translation.json</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/locales/en/translation.json">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/locales/hi/translation.json</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/locales/hi/translation.json">Copy</button></li>
+    </ul>
+  </div>
 
-      // Toast helpers
-      const toastEl = document.getElementById('toast');
-      const toastTitle = document.getElementById('toast-title');
-      const toastDesc = document.getElementById('toast-desc');
-      const toastClose = document.getElementById('toast-close');
-      let toastTimer;
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">assets, integrations</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/assets/fallbackAvatars.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/assets/fallbackAvatars.js">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/integrations/placeholders.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/integrations/placeholders.js">Copy</button></li>
+    </ul>
+  </div>
 
-      function showToast(title, desc, timeout = 3500) {
-        toastTitle.textContent = title || 'Notice';
-        toastDesc.textContent = desc || '';
-        toastEl.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => hideToast(), timeout);
-      }
-      function hideToast() {
-        toastEl.classList.remove('show');
-      }
-      toastClose && toastClose.addEventListener('click', hideToast);
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">adapters, hooks, contexts</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/adapters/chat.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/adapters/chat.js">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/adapters/voice.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/adapters/voice.js">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/hooks/useLanguageVoice.js</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/hooks/useLanguageVoice.js">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/contexts/LanguageVoiceContext.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/contexts/LanguageVoiceContext.jsx">Copy</button></li>
+    </ul>
+  </div>
 
-      // Hook demo buttons to show sample toast (simulating "coming soon" behaviour)
-      const demoButtons = ['tryDemoTop', 'tryDemoMobile', 'heroDemoBtn', 'ctaDemo'];
-      demoButtons.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.addEventListener('click', (e) => {
-            e.preventDefault();
-            showToast('🚧 Demo feature coming soon!', "This feature isn't implemented in this static preview—use the full Vite app for interactive demos.");
-            // Close mobile menu if open
-            if (mobileOpen) { mobileMenu.style.display = 'none'; mobileOpen = false; }
-          });
-        }
-      });
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">components</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/components/Layout.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/components/Layout.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/components/Header.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/components/Header.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/components/Footer.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/components/Footer.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/components/AgentCard.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/components/AgentCard.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/components/LanguageVoiceModal.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/components/LanguageVoiceModal.jsx">Copy</button></li>
+    </ul>
+  </div>
 
-      // small smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(a=>{
-        a.addEventListener('click', function(e){
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            window.scrollTo({ top: target.offsetTop - 72, behavior: 'smooth' });
-          }
-        });
-      });
-    </script>
-  </body>
-</html>
+  <div class="card rounded-xl p-4 grid-col">
+    <h2 class="font-semibold mb-3">pages</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-center justify-between gap-2"><code>src/pages/HomePage.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/pages/HomePage.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/pages/AgentDetailPage.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/pages/AgentDetailPage.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/pages/PricingPage.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/pages/PricingPage.jsx">Copy</button></li>
+      <li class="flex items-center justify-between gap-2"><code>src/pages/CheckoutPage.jsx</code><button class="copy-btn text-xs px-2 py-1 rounded border border-white/10" data-path="src/pages/CheckoutPage.jsx">Copy</button></li>
+    </ul>
+  </div>
+
+</section>
