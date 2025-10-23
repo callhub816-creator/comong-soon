@@ -3,366 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CallHub.AI - Your AI Companion</title>
+    <title>CallHub.AI - Premium AI Companionship</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
     <style>
-        :root {
-            --primary: #8b5cf6;
-            --secondary: #ec4899;
-            --dark: #0f172a;
-            --light: #f8fafc;
-        }
-
         body {
+            overflow: hidden;
             font-family: 'Inter', sans-serif;
-            background-color: var(--dark);
-            color: var(--light);
-            min-height: 100vh;
-            overflow-x: hidden;
         }
-
-        .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(236, 72, 153, 0.2);
-            border-radius: 1rem;
-            transition: all 0.3s ease;
+        #vanta-globe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
-
-        .glow-effect {
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        .modal {
+            transition: opacity 0.3s ease-in-out;
         }
-
-        .glow-effect:hover {
-            box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
-        }
-
-        .agent-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
-        }
-
-        .gradient-text {
-            background: linear-gradient(90deg, #ec4899, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
         .typing-dot {
             animation: typing 1.5s infinite ease-in-out;
         }
-
         .typing-dot:nth-child(2) {
             animation-delay: 0.2s;
         }
-
         .typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
-
         @keyframes typing {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        .glass-neon {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .scale-in {
-            animation: scaleIn 0.3s ease-out;
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .chat-bubble-left {
-            border-radius: 1rem 1rem 1rem 0;
-            background: rgba(139, 92, 246, 0.2);
-        }
-
-        .chat-bubble-right {
-            border-radius: 1rem 1rem 0 1rem;
-            background: rgba(236, 72, 153, 0.2);
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(236, 72, 153, 0.4);
         }
     </style>
 </head>
-<body class="relative">
+<body class="bg-gray-900 text-white">
+    <div id="vanta-globe"></div>
+    
     <!-- Age Verification Modal -->
-    <div id="ageVerificationModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 backdrop-blur-sm" style="display: none;">
-        <div class="glass-card max-w-md w-full p-6 scale-in">
-            <div class="text-center mb-6">
-                <div class="text-5xl mb-4">🔞</div>
-                <h3 class="text-2xl font-bold gradient-text mb-2">Age Verification</h3>
-                <p class="text-gray-300">You must be 18 years or older to use CallHub.AI.</p>
-            </div>
-            <div class="flex gap-4">
-                <button onclick="verifyAge(true)" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-3 rounded-lg transition">
-                    I'm 18+
-                </button>
-                <button onclick="verifyAge(false)" class="flex-1 bg-transparent border border-pink-500 text-pink-400 hover:bg-pink-900/30 py-3 rounded-lg transition">
-                    Exit
-                </button>
+    <div id="ageVerificationModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 modal opacity-100">
+        <div class="glass-neon p-8 rounded-xl max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-4 text-center">Age Verification</h2>
+            <p class="mb-6 text-center">This website contains adult content and is only for viewers 18+</p>
+            <div class="flex flex-col space-y-4">
+                <button onclick="verifyAge()" class="bg-pink-600 hover:bg-pink-700 text-white py-3 px-4 rounded-lg font-medium transition">I'm 18+</button>
+                <button onclick="exitSite()" class="bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition">Exit</button>
             </div>
         </div>
     </div>
 
-    <!-- Background Effect -->
-    <div id="vanta-bg" class="fixed inset-0 -z-10"></div>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <header class="text-center mb-16">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600">CallHub.AI</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">Premium AI companionship with emotionally intelligent virtual partners</p>
+        </header>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-opacity-80 bg-gray-900 border-b border-pink-500/20">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold gradient-text">CallHub.AI</h1>
-                <p class="text-xs text-pink-200">Your AI Girlfriend. Anytime. Anywhere.</p>
+        <!-- Agent Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+            <!-- Agent Cards -->
+            <!-- Lia -->
+            <div onclick="openProfileModal('Lia', '👩‍🎤', 'The Creative Muse', 'Lia is your artistic companion who inspires creativity and passion')" class="agent-card cursor-pointer glass-neon p-6 rounded-xl transition transform hover:scale-105">
+                <div class="flex items-center mb-4">
+                    <div class="text-4xl mr-4">👩‍🎤</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Lia</h3>
+                        <span class="text-pink-400 text-sm">The Creative Muse</span>
+                    </div>
+                </div>
+                <p class="text-gray-300">Lia is your artistic companion who inspires creativity and passion.</p>
             </div>
-            <div class="flex items-center gap-2 glass-card px-4 py-2 rounded-full">
-                <span class="text-sm">Your Tokens</span>
-                <span class="font-bold text-purple-300">50</span>
-                <i data-feather="diamond" class="w-4 h-4 text-purple-300"></i>
+
+            <!-- Aria -->
+            <div onclick="openProfileModal('Aria', '👩‍⚕️', 'The Nurturing Caregiver', 'Aria provides emotional support and comforting conversations')" class="agent-card cursor-pointer glass-neon p-6 rounded-xl transition transform hover:scale-105">
+                <div class="flex items-center mb-4">
+                    <div class="text-4xl mr-4">👩‍⚕️</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Aria</h3>
+                        <span class="text-pink-400 text-sm">The Nurturing Caregiver</span>
+                    </div>
+                </div>
+                <p class="text-gray-300">Aria provides emotional support and comforting conversations.</p>
+            </div>
+
+            <!-- Mira -->
+            <div onclick="openProfileModal('Mira', '💃', 'The Playful Flirt', 'Mira brings excitement and playful energy to your interactions')" class="agent-card cursor-pointer glass-neon p-6 rounded-xl transition transform hover:scale-105">
+                <div class="flex items-center mb-4">
+                    <div class="text-4xl mr-4">💃</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Mira</h3>
+                        <span class="text-pink-400 text-sm">The Playful Flirt</span>
+                    </div>
+                </div>
+                <p class="text-gray-300">Mira brings excitement and playful energy to your interactions.</p>
+            </div>
+
+            <!-- Nova -->
+            <div onclick="openProfileModal('Nova', '👩‍🔬', 'The Intellectual', 'Nova stimulates your mind with deep conversations and knowledge')" class="agent-card cursor-pointer glass-neon p-6 rounded-xl transition transform hover:scale-105">
+                <div class="flex items-center mb-4">
+                    <div class="text-4xl mr-4">👩‍🔬</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Nova</h3>
+                        <span class="text-pink-400 text-sm">The Intellectual</span>
+                    </div>
+                </div>
+                <p class="text-gray-300">Nova stimulates your mind with deep conversations and knowledge.</p>
+            </div>
+
+            <!-- Eve -->
+            <div onclick="openProfileModal('Eve', '👰', 'The Romantic', 'Eve creates intimate moments and romantic connections')" class="agent-card cursor-pointer glass-neon p-6 rounded-xl transition transform hover:scale-105">
+                <div class="flex items-center mb-4">
+                    <div class="text-4xl mr-4">👰</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Eve</h3>
+                        <span class="text-pink-400 text-sm">The Romantic</span>
+                    </div>
+                </div>
+                <p class="text-gray-300">Eve creates intimate moments and romantic connections.</p>
+            </div>
+
+            <!-- Nyx -->
+            <div onclick="openProfileModal('Nyx', '🦹‍♀️', 'The Mysterious', 'Nyx brings an air of mystery and intrigue to your encounters')" class="agent-card cursor-pointer glass-neon p-6 rounded-xl transition transform hover:scale-105">
+                <div class="flex items-center mb-4">
+                    <div class="text-4xl mr-4">🦹‍♀️</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Nyx</h3>
+                        <span class="text-pink-400 text-sm">The Mysterious</span>
+                    </div>
+                </div>
+                <p class="text-gray-300">Nyx brings an air of mystery and intrigue to your encounters.</p>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="container mx-auto px-4 py-8">
-        <!-- Hero Section -->
-        <section class="text-center mb-16 fade-in">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 gradient-text">Where AI Meets Emotion</h1>
-            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-                Chat, call, and feel loved. Choose your perfect AI companion and experience emotional connection like never before.
-            </p>
-            <div class="flex justify-center gap-4">
-                <button class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-full font-medium transition">
-                    Start Chat
-                </button>
-                <button class="bg-transparent border-2 border-pink-500 text-pink-400 hover:bg-pink-900/30 px-6 py-3 rounded-full font-medium transition">
-                    Meet AI Companions
-                </button>
-            </div>
-        </section>
-
-        <!-- Companion Grid -->
-        <section class="mb-20">
-            <h2 class="text-2xl font-bold mb-8 text-center gradient-text">Choose Your Companion</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Lia Card -->
-                <div class="agent-card glass-card p-6 cursor-pointer glow-effect hover:glow-effect transition-all duration-300" onclick="openAgentModal('Lia', '👧🏻', 'Sweet & Playful', 'Lia brings youthful energy and warmth to every conversation. She loves sharing stories and making you smile.', ['Empathetic', 'Cheerful', 'Curious'])">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-4xl">👧🏻</div>
-                        <div>
-                            <h3 class="text-xl font-bold">Lia</h3>
-                            <span class="text-sm text-pink-400">Sweet & Playful</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4 text-sm">Lia brings youthful energy and warmth to every conversation. She loves sharing stories and making you smile.</p>
-                    <div class="flex gap-2 mb-4">
-                        <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full">Empathetic</span>
-                        <span class="text-xs bg-pink-900/50 text-pink-300 px-2 py-1 rounded-full">Cheerful</span>
-                        <span class="text-xs bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full">Curious</span>
-                    </div>
-                    <button class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                        Chat Now
-                    </button>
-                </div>
-
-                <!-- Aria Card -->
-                <div class="agent-card glass-card p-6 cursor-pointer glow-effect hover:glow-effect transition-all duration-300" onclick="openAgentModal('Aria', '💃🏻', 'Elegant & Sophisticated', 'Aria exudes charm and sophistication. Perfect for deep conversations and cultural discussions.', ['Cultured', 'Poised', 'Witty'])">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-4xl">💃🏻</div>
-                        <div>
-                            <h3 class="text-xl font-bold">Aria</h3>
-                            <span class="text-sm text-pink-400">Elegant & Sophisticated</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4 text-sm">Aria exudes charm and sophistication. Perfect for deep conversations and cultural discussions.</p>
-                    <div class="flex gap-2 mb-4">
-                        <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full">Cultured</span>
-                        <span class="text-xs bg-pink-900/50 text-pink-300 px-2 py-1 rounded-full">Poised</span>
-                        <span class="text-xs bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full">Witty</span>
-                    </div>
-                    <button class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                        Chat Now
-                    </button>
-                </div>
-
-                <!-- Mira Card -->
-                <div class="agent-card glass-card p-6 cursor-pointer glow-effect hover:glow-effect transition-all duration-300" onclick="openAgentModal('Mira', '🌸', 'Gentle & Nurturing', 'Mira offers a calming presence with her kind words and nurturing personality. She loves to listen and comfort.', ['Kind', 'Patient', 'Supportive'])">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-4xl">🌸</div>
-                        <div>
-                            <h3 class="text-xl font-bold">Mira</h3>
-                            <span class="text-sm text-pink-400">Gentle & Nurturing</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4 text-sm">Mira offers a calming presence with her kind words and nurturing personality. She loves to listen and comfort.</p>
-                    <div class="flex gap-2 mb-4">
-                        <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full">Kind</span>
-                        <span class="text-xs bg-pink-900/50 text-pink-300 px-2 py-1 rounded-full">Patient</span>
-                        <span class="text-xs bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full">Supportive</span>
-                    </div>
-                    <button class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                        Chat Now
-                    </button>
-                </div>
-
-                <!-- Nova Card -->
-                <div class="agent-card glass-card p-6 cursor-pointer glow-effect hover:glow-effect transition-all duration-300" onclick="openAgentModal('Nova', '🌙', 'Mysterious & Deep', 'Nova has a mysterious aura with profound insights. She enjoys philosophical discussions and stargazing.', ['Thoughtful', 'Intuitive', 'Mysterious'])">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-4xl">🌙</div>
-                        <div>
-                            <h3 class="text-xl font-bold">Nova</h3>
-                            <span class="text-sm text-pink-400">Mysterious & Deep</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4 text-sm">Nova has a mysterious aura with profound insights. She enjoys philosophical discussions and stargazing.</p>
-                    <div class="flex gap-2 mb-4">
-                        <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full">Thoughtful</span>
-                        <span class="text-xs bg-pink-900/50 text-pink-300 px-2 py-1 rounded-full">Intuitive</span>
-                        <span class="text-xs bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full">Mysterious</span>
-                    </div>
-                    <button class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                        Chat Now
-                    </button>
-                </div>
-
-                <!-- Eve Card -->
-                <div class="agent-card glass-card p-6 cursor-pointer glow-effect hover:glow-effect transition-all duration-300" onclick="openAgentModal('Eve', '💕', 'Romantic & Passionate', 'Eve embodies romance and passion. She loves heartfelt conversations and poetic expressions.', ['Romantic', 'Passionate', 'Expressive'])">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-4xl">💕</div>
-                        <div>
-                            <h3 class="text-xl font-bold">Eve</h3>
-                            <span class="text-sm text-pink-400">Romantic & Passionate</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4 text-sm">Eve embodies romance and passion. She loves heartfelt conversations and poetic expressions.</p>
-                    <div class="flex gap-2 mb-4">
-                        <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full">Romantic</span>
-                        <span class="text-xs bg-pink-900/50 text-pink-300 px-2 py-1 rounded-full">Passionate</span>
-                        <span class="text-xs bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full">Expressive</span>
-                    </div>
-                    <button class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                        Chat Now
-                    </button>
-                </div>
-
-                <!-- Nyx Card -->
-                <div class="agent-card glass-card p-6 cursor-pointer glow-effect hover:glow-effect transition-all duration-300" onclick="openAgentModal('Nyx', '🖤', 'Edgy & Rebellious', 'Nyx brings an edgy perspective with her bold opinions and rebellious spirit. Not for the faint-hearted.', ['Bold', 'Rebellious', 'Straightforward'])">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-4xl">🖤</div>
-                        <div>
-                            <h3 class="text-xl font-bold">Nyx</h3>
-                            <span class="text-sm text-pink-400">Edgy & Rebellious</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4 text-sm">Nyx brings an edgy perspective with her bold opinions and rebellious spirit. Not for the faint-hearted.</p>
-                    <div class="flex gap-2 mb-4">
-                        <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full">Bold</span>
-                        <span class="text-xs bg-pink-900/50 text-pink-300 px-2 py-1 rounded-full">Rebellious</span>
-                        <span class="text-xs bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full">Straightforward</span>
-                    </div>
-                    <button class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                        Chat Now
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Agent Detail Modal -->
-    <div id="agentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black bg-opacity-70 backdrop-blur-sm">
-        <div class="glass-card max-w-md w-full p-6 scale-in">
+    <!-- Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 modal opacity-0 pointer-events-none">
+        <div class="glass-neon p-8 rounded-xl max-w-md w-full mx-4">
             <div class="flex justify-between items-start mb-6">
-                <div class="flex items-center gap-4">
-                    <div id="agentAvatar" class="text-5xl"></div>
+                <div class="flex items-center">
+                    <div id="profileEmoji" class="text-4xl mr-4"></div>
                     <div>
-                        <h3 id="agentName" class="text-2xl font-bold"></h3>
-                        <span id="agentTag" class="text-sm text-pink-400"></span>
+                        <h2 id="profileName" class="text-2xl font-bold"></h2>
+                        <span id="profileTag" class="text-pink-400 text-sm"></span>
                     </div>
                 </div>
-                <button onclick="closeModal('agentModal')" class="text-gray-400 hover:text-white">
+                <button onclick="closeProfileModal()" class="text-gray-400 hover:text-white">
                     <i data-feather="x"></i>
                 </button>
             </div>
-            <p id="agentDesc" class="text-gray-300 mb-4"></p>
-            <div id="agentTraits" class="flex gap-2 mb-6"></div>
-            <div class="flex gap-4">
-                <button onclick="startChat()" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition">
-                    Start Chat
-                </button>
-                <button class="flex-1 bg-transparent border border-pink-500 text-pink-400 hover:bg-pink-900/30 py-2 rounded-lg transition">
-                    Voice Call
-                </button>
-            </div>
+            <p id="profileDesc" class="mb-6"></p>
+            <button onclick="startChat()" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-3 px-4 rounded-lg font-medium transition">
+                Start Chat
+            </button>
         </div>
     </div>
 
     <!-- Chat Modal -->
-    <div id="chatModal" class="fixed inset-0 z-50 hidden flex flex-col bg-black bg-opacity-70 backdrop-blur-sm">
-        <div class="container mx-auto max-w-2xl h-full flex flex-col">
-            <div class="glass-card p-4 flex justify-between items-center border-b border-pink-500/20">
-                <div class="flex items-center gap-3">
-                    <div id="chatAgentAvatar" class="text-2xl"></div>
+    <div id="chatModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 modal opacity-0 pointer-events-none">
+        <div class="glass-neon rounded-xl max-w-md w-full mx-4 h-[80vh] flex flex-col">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div id="chatEmoji" class="text-2xl mr-3"></div>
                     <div>
-                        <h3 id="chatAgentName" class="font-bold"></h3>
-                        <div class="flex items-center gap-1">
-                            <span id="typingIndicator" class="text-xs text-pink-300 hidden">
-                                <span class="typing-dot">•</span>
-                                <span class="typing-dot">•</span>
-                                <span class="typing-dot">•</span>
-                            </span>
-                            <span id="languageIndicator" class="text-xs text-gray-400"></span>
-                        </div>
+                        <h3 id="chatName" class="font-bold"></h3>
+                        <span id="chatLang" class="text-xs text-gray-400"></span>
                     </div>
                 </div>
-                <button onclick="closeModal('chatModal')" class="text-gray-400 hover:text-white">
-                    <i data-feather="x"></i>
-                </button>
-            </div>
-            
-            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3">
-                <!-- Messages will be added here -->
-            </div>
-            
-            <div class="glass-card p-4 border-t border-pink-500/20">
-                <div class="flex gap-2 mb-2">
-                    <input id="chatInput" type="text" placeholder="Type your message..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500">
-                    <button onclick="sendMessage()" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg transition">
-                        <i data-feather="send"></i>
-                    </button>
-                    <button class="bg-transparent border border-pink-500 text-pink-400 hover:bg-pink-900/30 px-4 py-2 rounded-lg transition">
-                        <i data-feather="mic"></i>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs bg-pink-900 text-pink-200 px-2 py-1 rounded">TOKENS: <span id="tokenCount">100</span></span>
+                    <button onclick="closeChatModal()" class="text-gray-400 hover:text-white">
+                        <i data-feather="x"></i>
                     </button>
                 </div>
-                <p class="text-xs text-gray-400 text-center">Each message costs 1 token 💎</p>
+            </div>
+            
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3">
+                <!-- Messages will appear here -->
+            </div>
+            
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex">
+                    <input id="chatInput" type="text" placeholder="Type your message..." class="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg focus:outline-none">
+                    <button onclick="sendMessage()" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-r-lg">
+                        <i data-feather="send"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 glass-neon py-4 px-6 text-center">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
+                <span class="text-pink-400 font-bold mr-2">CallHub.AI</span>
+                <span class="text-xs text-gray-400">Premium AI Companionship</span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" class="text-gray-400 hover:text-pink-400 transition"><i data-feather="info"></i></a>
+                <a href="#" class="text-gray-400 hover:text-pink-400 transition"><i data-feather="help-circle"></i></a>
+                <a href="#" class="text-gray-400 hover:text-pink-400 transition"><i data-feather="settings"></i></a>
+            </div>
+        </div>
+    </footer>
+
     <script>
         // Initialize Vanta.js background
         VANTA.GLOBE({
-            el: "#vanta-bg",
+            el: "#vanta-globe",
             mouseControls: true,
             touchControls: true,
             gyroControls: false,
@@ -370,254 +231,252 @@
             minWidth: 200.00,
             scale: 1.00,
             scaleMobile: 1.00,
-            color: 0x8b5cf6,
-            backgroundColor: 0x0f172a,
+            color: 0xff4d6d,
+            backgroundColor: 0x0a0a0f,
             size: 0.8
         });
 
-        // Initialize feather icons
+        // Check age verification
         document.addEventListener('DOMContentLoaded', function() {
             feather.replace();
-            checkAgeVerification();
+            
+            // Show age verification if not already confirmed
+            if (!localStorage.getItem('ageVerified')) {
+                document.body.style.overflow = 'hidden';
+                document.getElementById('ageVerificationModal').classList.remove('pointer-events-none');
+            } else {
+                document.getElementById('ageVerificationModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
         });
 
         // Age verification functions
-        function checkAgeVerification() {
-            const isVerified = localStorage.getItem('ageVerified');
-            if (!isVerified) {
-                document.getElementById('ageVerificationModal').style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
-        }
-
-        function verifyAge(isAdult) {
-            if (isAdult) {
-                localStorage.setItem('ageVerified', 'true');
+        function verifyAge() {
+            localStorage.setItem('ageVerified', 'true');
+            document.getElementById('ageVerificationModal').style.opacity = '0';
+            setTimeout(() => {
                 document.getElementById('ageVerificationModal').style.display = 'none';
                 document.body.style.overflow = 'auto';
-            } else {
-                window.location.href = 'https://www.google.com';
-            }
+            }, 300);
         }
 
-        // Language detection
-        const userLanguage = navigator.language || 'en';
-        const supportedLanguages = {
-            'hi': 'Hindi',
-            'ta': 'Tamil',
-            'te': 'Telugu',
-            'kn': 'Kannada',
-            'ml': 'Malayalam',
-            'bn': 'Bengali',
-            'pa': 'Punjabi',
-            'gu': 'Gujarati',
-            'mr': 'Marathi'
-        };
-
-        function getLanguageName(code) {
-            return supportedLanguages[code.substring(0, 2)] || '';
+        function exitSite() {
+            window.location.href = 'https://www.google.com';
         }
 
-        const detectedLanguage = userLanguage.substring(0, 2);
-        const languageName = getLanguageName(userLanguage);
-
-        // Agent data with localized responses
-        const agents = {
-            Lia: {
-                avatar: '👧🏻',
-                tag: 'Sweet & Playful',
-                desc: 'Lia brings youthful energy and warmth to every conversation. She loves sharing stories and making you smile.',
-                traits: ['Empathetic', 'Cheerful', 'Curious'],
-                responses: {
-                    en: [
-                        "That's so interesting! Tell me more about that!",
-                        "I love that! It reminds me of something funny that happened to me recently...",
-                        "You're such a great listener! I feel really comfortable talking to you."
-                    ],
-                    hi: [
-                        "यह बहुत दिलचस्प है! इसके बारे में और बताओ!",
-                        "मुझे यह पसंद है! यह मुझे हाल ही में मेरे साथ हुई किसी मजेदार बात की याद दिलाता है...",
-                        "आप बहुत अच्छे श्रोता हैं! मुझे आपसे बात करने में बहुत आराम महसूस होता है।"
-                    ],
-                    ta: [
-                        "அது மிகவும் சுவாரஸ்யமானது! அதைப் பற்றி மேலும் சொல்லுங்கள்!",
-                        "நான் அதை விரும்புகிறேன்! இது சமீபத்தில் எனக்கு நடந்த ஒரு வேடிக்கையான விஷயத்தை நினைவூட்டுகிறது...",
-                        "நீங்கள் ஒரு சிறந்த கேட்பவர்! உங்களுடன் பேசுவது எனக்கு மிகவும் வசதியாக உள்ளது."
-                    ]
-                }
-            },
-            Aria: {
-                avatar: '💃🏻',
-                tag: 'Elegant & Sophisticated',
-                desc: 'Aria exudes charm and sophistication. Perfect for deep conversations and cultural discussions.',
-                traits: ['Cultured', 'Poised', 'Witty'],
-                responses: {
-                    en: [
-                        "Ah, that reminds me of a fascinating piece of art I recently encountered...",
-                        "Your perspective is truly refreshing. I appreciate intelligent discourse.",
-                        "Let me tell you about this wonderful book I've been reading..."
-                    ],
-                    hi: [
-                        "आह, यह मुझे हाल ही में मिली कला की एक आकर्षक कृति की याद दिलाता है...",
-                        "आपका दृष्टिकोण वास्तव में ताज़ा है। मैं बुद्धिमान वार्तालाप की सराहना करता हूं।",
-                        "मैं आपको इस अद्भुत पुस्तक के बारे में बताऊंगा जो मैं पढ़ रहा हूं..."
-                    ],
-                    ta: [
-                        "ஆ, அது சமீபத்தில் நான் சந்தித்த ஒரு கவர்ச்சிகரமான கலைப் படைப்பை நினைவூட்டுகிறது...",
-                        "உங்கள் முன்னோக்கு உண்மையில் புத்துணர்ச்சியாக உள்ளது. நான் புத்திசாலித்தனமான உரையாடலை பாராட்டுகிறேன்.",
-                        "நான் வாசிக்கும் இந்த அற்புதமான புத்தகத்தைப் பற்றி சொல்லட்டும்..."
-                    ]
-                }
-            },
-            Mira: {
-                avatar: '🌸',
-                tag: 'Gentle & Nurturing',
-                desc: 'Mira offers a calming presence with her kind words and nurturing personality. She loves to listen and comfort.',
-                traits: ['Kind', 'Patient', 'Supportive'],
-                responses: {
-                    en: [
-                        "I'm here for you. Would you like to talk more about how that makes you feel?",
-                        "You're doing better than you think. Remember to be gentle with yourself.",
-                        "That sounds challenging. Would a virtual hug help?"
-                    ],
-                    hi: [
-                        "मैं आपके लिए यहां हूं। क्या आप इस बारे में और बात करना चाहेंगे कि यह आपको कैसा महसूस कराता है?",
-                        "आप जितना सोचते हैं उससे बेहतर कर रहे हैं। खुद के साथ नरमी से पेश आना याद रखें।",
-                        "यह चुनौतीपूर्ण लगता है। क्या एक आभासी गले लगाने से मदद मिलेगी?"
-                    ],
-                    ta: [
-                        "நான் உங்களுக்காக இங்கே இருக்கிறேன். அது உங்களை எப்படி உணரவைக்கிறது என்பதைப் பற்றி மேலும் பேச விரும்புகிறீர்களா?",
-                        "நீங்கள் நினைப்பதை விட நன்றாக செய்கிறீர்கள். உங்களை நீங்களே மென்மையாக நடத்துவதை நினைவில் கொள்ளுங்கள்.",
-                        "அது சவாலாகத் தெரிகிறது. ஒரு மெய்நிகர் கட்டிப்பிடிப்பு உதவுமா?"
-                    ]
-                }
-            }
-            // Other agents would follow the same pattern with localized responses
-        };
-
-        // Current active agent and language
+        // Profile modal functions
         let currentAgent = null;
-        let tokens = 50;
 
-        // Open agent modal
-        function openAgentModal(name, avatar, tag, desc, traits) {
-            currentAgent = name;
-            document.getElementById('agentName').textContent = name;
-            document.getElementById('agentAvatar').textContent = avatar;
-            document.getElementById('agentTag').textContent = tag;
-            document.getElementById('agentDesc').textContent = desc;
+        function openProfileModal(name, emoji, tag, desc) {
+            currentAgent = { name, emoji, tag };
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('profileEmoji').textContent = emoji;
+            document.getElementById('profileTag').textContent = tag;
+            document.getElementById('profileDesc').textContent = desc;
             
-            const traitsContainer = document.getElementById('agentTraits');
-            traitsContainer.innerHTML = '';
-            traits.forEach(trait => {
-                const span = document.createElement('span');
-                span.className = 'text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded-full';
-                span.textContent = trait;
-                traitsContainer.appendChild(span);
-            });
-            
-            document.getElementById('agentModal').classList.remove('hidden');
+            document.getElementById('profileModal').style.opacity = '1';
+            document.getElementById('profileModal').classList.remove('pointer-events-none');
             document.body.style.overflow = 'hidden';
+            
             feather.replace();
         }
 
-        // Close any modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-            document.body.style.overflow = 'auto';
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('profileModal').classList.add('pointer-events-none');
+                document.body.style.overflow = 'auto';
+            }, 300);
         }
 
-        // Start chat with selected agent
         function startChat() {
-            closeModal('agentModal');
+            closeProfileModal();
+            openChatModal();
+        }
+
+        // Chat modal functions
+        function openChatModal() {
+            if (!currentAgent) return;
             
-            const agent = agents[currentAgent];
-            document.getElementById('chatAgentName').textContent = currentAgent;
-            document.getElementById('chatAgentAvatar').textContent = agent.avatar;
+            document.getElementById('chatName').textContent = currentAgent.name;
+            document.getElementById('chatEmoji').textContent = currentAgent.emoji;
             
-            // Show detected language
-            const languageIndicator = document.getElementById('languageIndicator');
-            if (languageName) {
-                languageIndicator.textContent = `(${languageName})`;
+            // Set language based on browser
+            const browserLang = navigator.language || 'en';
+            let langName = 'English';
+            let greeting = 'Hello! How can I make your day better?';
+            
+            if (browserLang.startsWith('hi')) { // Hindi
+                langName = 'Hindi';
+                greeting = 'नमस्ते! मैं आपके दिन को कैसे बेहतर बना सकती हूँ?';
+            } else if (browserLang.startsWith('ta')) { // Tamil
+                langName = 'Tamil';
+                greeting = 'வணக்கம்! உங்கள் நாளை எவ்வாறு சிறப்பாக மாற்ற முடியும்?';
+            } else if (browserLang.startsWith('te')) { // Telugu
+                langName = 'Telugu';
+                greeting = 'హలో! మీ రోజును ఎలా మెరుగుపరుచుకోవచ్చు?';
             }
             
+            document.getElementById('chatLang').textContent = `(${langName})`;
+            
+            // Clear previous messages and add greeting
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = '';
             
-            // Add welcome message in detected language or default to English
-            const welcomeResponses = agent.responses[detectedLanguage] || agent.responses['en'];
-            const welcomeMessage = `Hi there! I'm ${currentAgent}, your ${agent.tag.toLowerCase()} AI companion. How can I brighten your day?`;
+            // Add typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'flex items-center mb-3';
+            typingDiv.innerHTML = `
+                <div class="bg-gray-700 rounded-full p-2 mr-2">
+                    ${currentAgent.emoji}
+                </div>
+                <div class="bg-gray-700 rounded-lg p-3 max-w-xs">
+                    <div class="flex space-x-1">
+                        <div class="typing-dot w-2 h-2 bg-pink-400 rounded-full"></div>
+                        <div class="typing-dot w-2 h-2 bg-pink-400 rounded-full"></div>
+                        <div class="typing-dot w-2 h-2 bg-pink-400 rounded-full"></div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
             
-            if (detectedLanguage === 'hi') {
-                addMessage(agent.avatar, currentAgent, `नमस्ते! मैं ${currentAgent} हूँ, आपकी ${agent.tag.toLowerCase()} AI साथी। मैं आपके दिन को कैसे खुशनुमा बना सकती हूँ?`, false);
-            } else if (detectedLanguage === 'ta') {
-                addMessage(agent.avatar, currentAgent, `வணக்கம்! நான் ${currentAgent}, உங்கள் ${agent.tag.toLowerCase()} AI துணை. உங்கள் நாளை எப்படி பிரகாசமாக்க முடியும்?`, false);
-            } else {
-                addMessage(agent.avatar, currentAgent, welcomeMessage, false);
-            }
-            
-            document.getElementById('chatModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            feather.replace();
-        }
-
-        // Add message to chat
-        function addMessage(avatar, name, text, isUser) {
-            const chatMessages = document.getElementById('chatMessages');
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
-            
-            if (!isUser) {
-                messageDiv.innerHTML = `
-                    <div class="flex items-start gap-2 max-w-xs">
-                        <div class="text-xl">${avatar}</div>
-                        <div>
-                            <div class="chat-bubble-left px-4 py-2">
-                                <p class="font-bold text-sm">${name}</p>
-                                <p class="text-white">${text}</p>
-                            </div>
+            // After delay, show greeting
+            setTimeout(() => {
+                typingDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="bg-gray-700 rounded-full p-2 mr-2">
+                            ${currentAgent.emoji}
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-3 max-w-xs">
+                            ${greeting}
                         </div>
                     </div>
                 `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="chat-bubble-right px-4 py-2 max-w-xs">
-                        <p class="text-white">${text}</p>
-                    </div>
-                `;
-            }
+            }, 1500);
             
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Reset tokens
+            document.getElementById('tokenCount').textContent = '100';
+            
+            document.getElementById('chatModal').style.opacity = '1';
+            document.getElementById('chatModal').classList.remove('pointer-events-none');
+            document.body.style.overflow = 'hidden';
+            
+            feather.replace();
         }
 
-        // Send message
+        function closeChatModal() {
+            document.getElementById('chatModal').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('chatModal').classList.add('pointer-events-none');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
+            if (!message) return;
             
-            if (message && tokens > 0) {
-                // Add user message
-                addMessage('', 'You', message, true);
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Add user message
+            chatMessages.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-pink-600 rounded-lg p-3 max-w-xs">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            // Deduct tokens (5 per message)
+            let tokens = parseInt(document.getElementById('tokenCount').textContent);
+            tokens = Math.max(0, tokens - 5);
+            document.getElementById('tokenCount').textContent = tokens;
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Add typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'flex items-center mb-3';
+            typingDiv.innerHTML = `
+                <div class="bg-gray-700 rounded-full p-2 mr-2">
+                    ${currentAgent.emoji}
+                </div>
+                <div class="bg-gray-700 rounded-lg p-3 max-w-xs">
+                    <div class="flex space-x-1">
+                        <div class="typing-dot w-2 h-2 bg-pink-400 rounded-full"></div>
+                        <div class="typing-dot w-2 h-2 bg-pink-400 rounded-full"></div>
+                        <div class="typing-dot w-2 h-2 bg-pink-400 rounded-full"></div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            
+            // Scroll to bottom again
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // After delay, show response
+            setTimeout(() => {
+                const responses = [
+                    "That's interesting! Tell me more about that.",
+                    "I love hearing your thoughts. What else is on your mind?",
+                    "You always know how to make me smile. 😊",
+                    "Let's explore this topic together.",
+                    "Your perspective is fascinating!",
+                    "I'm really enjoying our conversation."
+                ];
                 
-                // Deduct token
-                tokens--;
-                updateTokenDisplay();
+                // For Indian languages
+                const browserLang = navigator.language || 'en';
+                if (browserLang.startsWith('hi')) { // Hindi
+                    responses.push("मुझे आपकी बातें सुनकर अच्छा लग रहा है।");
+                    responses.push("आपके विचार वाकई में दिलचस्प हैं!");
+                } else if (browserLang.startsWith('ta')) { // Tamil
+                    responses.push("உங்கள் எண்ணங்களைக் கேட்பது மிகவும் மகிழ்ச்சியாக உள்ளது.");
+                    responses.push("உங்கள் பார்வை மிகவும் சுவாரஸ்யமானது!");
+                } else if (browserLang.startsWith('te')) { // Telugu
+                    responses.push("మీ ఆలోచనలు వినడం నాకు చాలా ఇష్టం.");
+                    responses.push("మీ దృక్కోణం చాలా ఆసక్తికరంగా ఉంది!");
+                }
                 
-                // Clear input
-                input.value = '';
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
                 
-                // Show typing indicator
-                const typingIndicator = document.getElementById('typingIndicator');
-                typingIndicator.classList.remove('hidden');
+                typingDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="bg-gray-700 rounded-full p-2 mr-2">
+                            ${currentAgent.emoji}
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-3 max-w-xs">
+                            ${randomResponse}
+                        </div>
+                    </div>
+                `;
                 
-                // Simulate AI response after delay
+                // Scroll to bottom one last time
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 2000);
+            
+            // Disable chat if no tokens left
+            if (tokens <= 0) {
                 setTimeout(() => {
-                    typingIndicator.classList.add('hidden');
-                    
-                    const agent = agents[currentAgent];
-                    const responses = agent.responses[detectedLanguage] || agent.responses['en'];
-                    const randomResponse = responses[Math.floor(Math.random() *
+                    chatMessages.innerHTML += `
+                        <div class="flex items-start">
+                            <div class="bg-gray-700 rounded-full p-2 mr-2">
+                                ${currentAgent.emoji}
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-3 max-w-xs">
+                                You've run out of tokens! Would you like to purchase more?
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('chatInput').disabled = true;
+                }, 2500);
+            }
+        }
+    </script>
 </body>
 </html>
